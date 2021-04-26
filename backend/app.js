@@ -1,16 +1,21 @@
 const express= require("express");
 const path=require('path');
 var cors = require('cors')
-const mongoose = require("mongoose");
 
 const app=express();
 
-const mongodb="mongodb://localhost/mydb";
-mongoose.connect(mongodb, {useNewUrlParser: true, useUnifiedTopology: true});
 
-var db=mongoose.connection;
-db.on('error',console.error.bind(console, "error correction:"))
-db.once('open', function(){console.log("connected to mongodb")});
+const mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost/BlogLogin", {useNewUrlParser: true, 
+                                                    useUnifiedTopology: true, 
+                                                    useCreateIndex:true, 
+                                                    useFindAndModify: false});
+
+mongoose.connection.once('open', ()=>{
+    console.log("connected to mongodb")
+}).on('error', ()=>{
+    console.log("error");
+});
 
 const RegisterSchema= new mongoose.Schema({
     name: String,
@@ -20,18 +25,20 @@ const RegisterSchema= new mongoose.Schema({
 });
 const Register = mongoose.model('Register', RegisterSchema);
 
-const john = new Register({name: "JohnDoe",
-                        email: "john@example.com", 
-                        password: "john",
-                        bio: "i like to read books"
-                    });
+
+
 app.use(cors())
 app.use(express.static(path.join(__dirname,"../frontend/blogs/build")));
 
 app.get("/",function(req,res){
+    console.log("first get");
     res.sendFile(path.join(__dirname,"../frontend/blogs/src/App.js"));
 })
 app.post("/login", function(res,req){
     console.log("received");
 })
-app.listen(3002);
+app.post("/register", function(res,req){
+    console.log("rgister");
+});
+
+app.listen(3001);
