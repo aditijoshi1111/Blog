@@ -1,11 +1,21 @@
 const express= require("express");
 const path=require('path');
 var cors = require('cors')
+// const logger=require('morgan');
+// var bodyParser = require('body-parser');
 
 const app=express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use(express.static(path.join(__dirname,"../frontend/blogs/build")));
+
+
+
 
 
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 mongoose.connect("mongodb://localhost/BlogLogin", {useNewUrlParser: true, 
                                                     useUnifiedTopology: true, 
                                                     useCreateIndex:true, 
@@ -17,28 +27,34 @@ mongoose.connection.once('open', ()=>{
     console.log("error");
 });
 
-const RegisterSchema= new mongoose.Schema({
-    name: String,
-    email: String,
-    Password: String,
-    bio: String
+const BlogSchema= new mongoose.Schema({
+    title: String,
+    body: String,
+    author: String
 });
-const Register = mongoose.model('Register', RegisterSchema);
+const Blog = mongoose.model('Blog', BlogSchema);
 
 
 
-app.use(cors())
-app.use(express.static(path.join(__dirname,"../frontend/blogs/build")));
+
 
 app.get("/",function(req,res){
     console.log("first get");
     res.sendFile(path.join(__dirname,"../frontend/blogs/src/App.js"));
 })
-app.post("/login", function(res,req){
-    console.log("received");
-})
-app.post("/register", function(res,req){
-    console.log("rgister");
-});
 
-app.listen(3001);
+app.post("/addblog", function(req,res){
+    var body=req.body;
+    var newBlog= new Blog({
+        title: body.title,
+        body: body.body,
+        author: body.author
+    });
+    newBlog.save(function(err,data){
+        if(err) console.log("Error in saving new Blog");
+
+        res.json(data);
+    })
+})
+
+app.listen(3002);
