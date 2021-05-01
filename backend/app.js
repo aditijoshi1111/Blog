@@ -15,7 +15,8 @@ app.use(express.static(path.join(__dirname,"../frontend/blogs/build")));
 
 
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
+// const { default: AllUserBlogs } = require("../frontend/blogs/src/Components/AllUserBlogs");
 mongoose.connect("mongodb://localhost/BlogLogin", {useNewUrlParser: true, 
                                                     useUnifiedTopology: true, 
                                                     useCreateIndex:true, 
@@ -41,6 +42,13 @@ const Blog = mongoose.model('Blog', BlogSchema);
 app.get("/",function(req,res){
     console.log("first get");
     res.sendFile(path.join(__dirname,"../frontend/blogs/src/App.js"));
+})
+app.get("/getBlogs", function(req,res){
+    Blog.find(function(err,data){
+        if(err) console.log("Error in getting AllUserBlogs"+ err);
+
+        res.json(data);
+    })
 })
 
 app.post("/addblog", function(req,res){
