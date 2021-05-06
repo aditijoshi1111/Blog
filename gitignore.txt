@@ -1,2 +1,0 @@
-C:\Users\user\Desktop\Web dev\Blog\backend\node_modules
-C:\Users\user\Desktop\Web dev\Blog\frontend\blogs\node_modules
